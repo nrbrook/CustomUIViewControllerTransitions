@@ -35,6 +35,8 @@
     UIView *to = [transitionContext viewForKey:UITransitionContextToViewKey];
     UIView *container = [transitionContext containerView];
     
+    to.frame = from.frame;
+    
     if(unwinding) {
         [container insertSubview:to belowSubview:from];
     } else {
