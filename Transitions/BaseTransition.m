@@ -7,6 +7,7 @@
 //
 
 #import "BaseTransition.h"
+#import <objc/runtime.h>
 
 NSTimeInterval TransitionDefaultDuration = 0.35;
 
@@ -27,15 +28,6 @@ NSTimeInterval TransitionDefaultDuration = 0.35;
                                  userInfo:nil];
 }
 
-- (void)setAsTransitionForViewController:(UIViewController *)viewController {
-    viewController.modalPresentationStyle = UIModalPresentationCustom;
-    viewController.transitioningDelegate = self;
-}
-
-- (void)setAsTransitionForNavigationController:(UINavigationController *)navigationController {
-    navigationController.delegate = self;
-}
-
 - (NSTimeInterval)transitionDuration:(id <UIViewControllerContextTransitioning>)transitionContext {
     return self.duration;
 }
@@ -50,6 +42,37 @@ NSTimeInterval TransitionDefaultDuration = 0.35;
 
 - (id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC {
     return self;
+}
+
+@end
+
+static void *TransitionKey;
+
+@implementation UIViewController(Transitions)
+
+- (BaseTransition *)transition {
+    return objc_getAssociatedObject(self, &TransitionKey);
+}
+
+- (void)setTransition:(BaseTransition *)transition {
+    self.modalPresentationStyle = transition == nil ? UIModalPresentationNone : UIModalPresentationCustom;
+    self.transitioningDelegate = transition;
+    objc_setAssociatedObject(self, &TransitionKey, transition, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+@end
+
+static void *StackTransitionKey;
+
+@implementation UINavigationController(StackTransitions)
+
+- (BaseTransition *)stackTransition {
+    return objc_getAssociatedObject(self, &StackTransitionKey);
+}
+
+- (void)setStackTransition:(BaseTransition *)transition {
+    self.delegate = transition;
+    objc_setAssociatedObject(self, &StackTransitionKey, transition, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

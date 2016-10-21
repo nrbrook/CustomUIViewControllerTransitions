@@ -6,40 +6,35 @@ If you've ever seen or made a custom animation by subclassing UIStoryboardSegue,
 
 ## Usage
 
-If you are using Storyboard with segues, it's really simple. Just override `-prepareForSegue:` in your presenting view controller and set the transition:
+Just set the transition to the view controller you are transitioning to:
 
 ```
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    // we must maintain a strong reference to transitions, otherwise they will not occur on dismiss.
-    self.transition = [FadeTransition new];
-}
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     [super prepareForSegue:segue sender:sender];
     if([segue.identifier isEqualToString:@"fade"]) {
-        [self.transition setAsTransitionForViewController:segue.destinationViewController];
+        segue.destinationViewController.transition = [FadeTransition new];
     }
 }
 ```
 
 Done!
 
-You can also set a transition on a navigation controller, either by creating a transition object on your storyboard scene and setting the transition controller as delegate, or in code in the view controller which presents the nav controller:
+You can also set a transition between all view controllers in a navigation controller:
 
 ```
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     [super prepareForSegue:segue sender:sender];
     if([segue.destinationViewController isKindOfClass:[UINavigationController class]]) {
     	UINavigationController *c = segue.destinationViewController;
-        [self.transition setAsTransitionForNavigationController:c];
+        c.stackTransition = [FadeTransition new];
     }
 }
 ```
 
+Note that this sets the Navigation Controller's delegate property. If you want your class to be the delegate, instead of setting the `stackTransition` property just implement the `-navigationController:animationControllerForOperation:fromViewController:toViewController:` and return a transition object.
+
 ## Adding transitions
 
-See `FadeTransition` as an example. For UIView based animations, just subclass `UIViewPropertyTransition` and implement the three required animation methods in `UIViewPropertyTransitionSubclass`. Do not call `super`.
+See `FadeTransition` as an example. For UIView based animations, just subclass `UIViewPropertyTransition` and implement the three required animation methods in `UIViewPropertyTransitionSubclass` protocol. Do not call `super`.
 
 If you create new transitions, please submit a pull request!

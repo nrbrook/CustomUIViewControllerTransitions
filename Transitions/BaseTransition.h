@@ -14,20 +14,16 @@ extern NSTimeInterval TransitionDefaultDuration;
 
 @property(nonatomic, assign) NSTimeInterval duration;
 
+@end
 
-/**
- Sets the view controller's transitionDelegate to this object to return itself in the delegate methods -animationControllerForPresentedController:presentingController:sourceController: and -animationControllerForDismissedController:
+@interface UIViewController(Transitions)
 
- @param viewController The view controller to set this transition on
- */
-- (void)setAsTransitionForViewController:(UIViewController *)viewController;
+@property(nonatomic, strong, nullable) BaseTransition *transition;
 
+@end
 
-/**
- Sets the navigation controller's delegate to this object to return itself in the delegate method -navigationController:animationControllerForOperation:fromViewController:toViewController:
+@interface UINavigationController(StackTransitions)
 
- @param navigationController The navigation controller to set this transition on
- */
-- (void)setAsTransitionForNavigationController:(UINavigationController *)navigationController;
+@property(nonatomic, strong, nullable) BaseTransition *stackTransition;
 
 @end

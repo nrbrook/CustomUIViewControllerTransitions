@@ -45,7 +45,7 @@
     }
     
     if(transition) {
-        [transition setAsTransitionForViewController:segue.destinationViewController];
+        segue.destinationViewController.transition = transition;
     }
 }
 
