@@ -350,6 +350,7 @@
 				0157D7251D9186F100BC2362 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

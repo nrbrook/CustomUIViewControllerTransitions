@@ -32,14 +32,17 @@
     BOOL unwinding = toVC.presentedViewController == fromVC;
     // workaround for bug where using viewForKey method returns nil
     UIView *from = fromVC.view;
-    UIView *to = [transitionContext viewForKey:UITransitionContextToViewKey];
+    UIView *to = toVC.view;
     UIView *container = [transitionContext containerView];
     
     to.frame = from.frame;
     
-    if(unwinding) {
-        [container insertSubview:to belowSubview:from];
-    } else {
+    NSTimeInterval duration = [self transitionDuration:transitionContext];
+    
+    [toVC beginAppearanceTransition:YES animated:duration > 0];
+    [fromVC beginAppearanceTransition:NO animated:duration > 0];
+    
+    if(!unwinding) {
         [container insertSubview:to aboveSubview:from];
     }
     
@@ -52,19 +55,21 @@
     void(^completion)() = ^() {
         BOOL cancelled = [transitionContext transitionWasCancelled];
         [self setCompletePropertiesUnwinding:unwinding fromView:from toView:to finished:!cancelled];
+        [toVC endAppearanceTransition];
+        [fromVC endAppearanceTransition];
         [transitionContext completeTransition:!cancelled];
     };
     
     if([UIViewPropertyAnimator class]) {
         // only available iOS 10
-        UIViewPropertyAnimator *animator = [UIViewPropertyAnimator runningPropertyAnimatorWithDuration:[self transitionDuration:transitionContext] delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:animations completion:^(UIViewAnimatingPosition finalPosition) {
+        UIViewPropertyAnimator *animator = [UIViewPropertyAnimator runningPropertyAnimatorWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:animations completion:^(UIViewAnimatingPosition finalPosition) {
             completion();
             [self.animators removeObjectForKey:transitionContext];
         }];
         
         [self.animators setObject:animator forKey:transitionContext];
     } else {
-        [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:animations completion:^(BOOL finished) {
+        [UIView animateWithDuration:duration animations:animations completion:^(BOOL finished) {
             completion();
         }];
     }
