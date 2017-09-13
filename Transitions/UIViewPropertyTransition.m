@@ -48,11 +48,11 @@
     
     [self setStartingPropertiesUnwinding:unwinding fromView:from toView:to];
     
-    void(^animations)() = ^() {
+    void(^animations)(void) = ^() {
         [self setAnimationPropertiesUnwinding:unwinding fromView:from toView:to];
     };
     
-    void(^completion)() = ^() {
+    void(^completion)(void) = ^() {
         BOOL cancelled = [transitionContext transitionWasCancelled];
         [self setCompletePropertiesUnwinding:unwinding fromView:from toView:to finished:!cancelled];
         [toVC endAppearanceTransition];
